@@ -1,6 +1,7 @@
 import { getEnvVariable } from "@/lib/helpers";
 import { NextResponse } from "next/server";
 
+// Set Cookie for middleware next
 export async function POST(request: Request) {
   const body = await request.json();
   const accessToken = body.accessToken as string;
