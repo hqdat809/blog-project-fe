@@ -24,12 +24,15 @@ export async function middleware(req: NextRequest) {
 
   const response = NextResponse.next();
 
+  console.log(token[0]);
+
   //   Check có token và có valid không? nếu không có hoặc ko valid thì redirect về login page?
   try {
     if (token[0]) {
       const { sub } = await verifyJWT<{ sub: string }>(token[0]);
       response.headers.set("X-USER-ID", sub);
       (req as AuthenticatedRequest).user = { id: sub };
+      console.log(sub);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -43,12 +46,11 @@ export async function middleware(req: NextRequest) {
 
     return NextResponse.redirect(new URL(`/login`, req.url));
   }
-
   // Server
   if (
     !token[0] &&
     (req.nextUrl.pathname.startsWith("/api/users") ||
-      req.nextUrl.pathname.startsWith("/api/auth/logout"))
+      req.nextUrl.pathname.startsWith("/api/logout"))
   ) {
     return getErrorResponse(401, "You are not login. Please login");
   }
@@ -59,7 +61,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(`/login`, req.url));
   }
 
-  // Redirect to login page if
+  // Redirect to login page
   if (req.url.includes("/login") && authUser && token[0]) {
     return NextResponse.redirect(new URL("/profile", req.url));
   }
@@ -68,5 +70,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile", "/login", "/api/users/:path*", "/api/auth/logout"],
+  matcher: ["/profile", "/login", "/api/users/:path*", "/api/logout"],
 };
