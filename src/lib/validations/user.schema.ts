@@ -46,5 +46,11 @@ export const LoginUserSchema = z.object({
     .min(8, "Password must be at least 8 characters"),
 });
 
+export const LoginRes = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+});
+
 export type LoginUserInput = z.infer<typeof LoginUserSchema>;
+export type LoginResType = z.infer<typeof LoginRes>;
 export type RegisterUserInput = z.infer<typeof RegisterUserSchema>;
