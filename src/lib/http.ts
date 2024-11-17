@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type CustomOptions = Omit<RequestInit, "method"> & {
   baseUrl?: string | undefined;
@@ -56,10 +54,6 @@ export const request = async <Response>(
     ? `${baseUrl}${url}`
     : `${baseUrl}/${url}`;
 
-  if (options) {
-    console.log(options);
-  }
-
   const res = await fetch(fullUrl, {
     ...options,
     headers: {
@@ -70,7 +64,7 @@ export const request = async <Response>(
     },
     body,
     method,
-    // set request with the cookies
+    // set request with the cookies for be
     credentials: "include",
   });
 
@@ -98,17 +92,10 @@ export const request = async <Response>(
           } catch (error) {
             console.log(error);
           } finally {
-            localStorage.removeItem("sessionToken");
-            localStorage.removeItem("sessionTokenExpiresAt");
             clientLogoutRequest = null;
             location.href = "/login";
           }
         }
-      } else {
-        const sessionToken = (options?.headers as any)?.Authorization.split(
-          "Bearer "
-        )[1];
-        redirect(`/logout?sessionToken=${sessionToken}`);
       }
     } else {
       throw new HttpError(data);
