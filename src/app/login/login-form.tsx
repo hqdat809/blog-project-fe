@@ -4,12 +4,12 @@ import { LoginUserInput, LoginUserSchema } from "@/lib/validations/user.schema";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { apiLoginUser } from "@/apiRequests/api-requests";
 import FormInput from "@/components/FormInput";
 import Link from "next/link";
 import { handleApiError } from "@/lib/helpers";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { authApiRequest } from "@/apiRequests/auth";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -33,7 +33,9 @@ export default function LoginForm() {
 
   async function LoginUserFunction(credentials: LoginUserInput) {
     try {
-      await apiLoginUser(JSON.stringify(credentials));
+      const result = await authApiRequest.login(credentials);
+
+      console.log(result);
 
       toast.success("Logged in successfully");
       return router.push("/profile");
@@ -46,6 +48,8 @@ export default function LoginForm() {
         toast.error(error.message);
         console.log("Error message:", error.message);
       }
+    } finally {
+      await authApiRequest.test();
     }
   }
 
