@@ -16,4 +16,6 @@ export const authApiRequest = {
     http.post("/api/auth", body, {
       baseUrl: "",
     }),
+  logoutFromServerNext: () => http.post("/api/logout", null, { baseUrl: "" }),
+  logoutFromServerExpress: () => http.post("/auth/logout", {}),
 };
