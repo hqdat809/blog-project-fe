@@ -12,8 +12,8 @@ export async function middleware(req: NextRequest) {
   const token: string[] = [];
 
   // get token from header if cookie has not been set
-  if (req.cookies.has("token")) {
-    token.push(req.cookies.get("token")?.value || "");
+  if (req.cookies.has("accessToken")) {
+    token.push(req.cookies.get("accessToken")?.value || "");
   } else if (req.headers.get("Authorization")?.startsWith("Bearer ")) {
     token.push(req.headers.get("Authorization")?.substring(7) || "");
   }

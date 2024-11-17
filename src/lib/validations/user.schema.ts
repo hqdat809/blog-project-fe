@@ -20,14 +20,14 @@ export const RegisterUserSchema = z
       .min(1, "Password is required")
       .min(8, "Password must be more than 8 characters")
       .max(32, "Password must be less than 32 characters"),
-    passwordConfirm: z
+    confirmPassword: z
       .string({
         required_error: "Confirm your password",
       })
       .min(1, "Confirm your password"),
   })
-  .refine((data) => data.password === data.passwordConfirm, {
-    path: ["passwordConfirm"],
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
     message: "Passwords do not match",
   });
 
@@ -53,4 +53,5 @@ export const LoginRes = z.object({
 
 export type LoginUserInput = z.infer<typeof LoginUserSchema>;
 export type LoginResType = z.infer<typeof LoginRes>;
+export type RegisterResType = LoginResType;
 export type RegisterUserInput = z.infer<typeof RegisterUserSchema>;

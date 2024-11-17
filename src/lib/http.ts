@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Cookie from "js-cookie";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type CustomOptions = Omit<RequestInit, "method"> & {
@@ -82,8 +81,6 @@ export const request = async <Response>(
     payload,
   };
 
-  Cookie.set("accessToken", payload.accessToken, { expires: 7, path: "" });
-
   // Interceptor;
   if (!res.ok) {
     if (res.status === 401) {
@@ -120,7 +117,6 @@ export const request = async <Response>(
 
   if (isClient()) {
     if ("auth/logout" === url) {
-      Cookie.remove("accessToken");
     }
   }
   return data;
