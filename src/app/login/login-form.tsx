@@ -31,12 +31,9 @@ export default function LoginForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSubmitSuccessful]);
 
-  async function LoginUserFunction(credentials: LoginUserInput) {
+  async function loginUserFunction(credentials: LoginUserInput) {
     try {
       await authApiRequest.login(credentials);
-
-      // await authApiRequest.auth(result.payload);
-
       toast.success("Logged in successfully");
       return router.replace("/profile");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,7 +51,7 @@ export default function LoginForm() {
   }
 
   const onSubmitHandler: SubmitHandler<LoginUserInput> = (values) => {
-    LoginUserFunction(values);
+    loginUserFunction(values);
   };
 
   return (
