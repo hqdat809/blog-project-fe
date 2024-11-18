@@ -33,14 +33,12 @@ export default function LoginForm() {
 
   async function LoginUserFunction(credentials: LoginUserInput) {
     try {
-      const result = await authApiRequest.login(credentials);
+      await authApiRequest.login(credentials);
 
-      console.log(result);
-
-      await authApiRequest.auth(result.payload);
+      // await authApiRequest.auth(result.payload);
 
       toast.success("Logged in successfully");
-      return router.push("/profile");
+      return router.replace("/profile");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log(error);

@@ -1,3 +1,5 @@
+import { authApiRequest } from "@/apiRequests/auth";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type CustomOptions = Omit<RequestInit, "method"> & {
   baseUrl?: string | undefined;
@@ -80,13 +82,7 @@ export const request = async <Response>(
     if (res.status === 401) {
       if (isClient()) {
         if (!clientLogoutRequest) {
-          clientLogoutRequest = fetch("/api/auth/logout", {
-            method: "POST",
-            body: JSON.stringify({ force: true }),
-            headers: {
-              ...baseHeaders,
-            } as any,
-          });
+          await authApiRequest.logoutFromServerExpress();
           try {
             await clientLogoutRequest;
           } catch (error) {
@@ -99,11 +95,6 @@ export const request = async <Response>(
       }
     } else {
       throw new HttpError(data);
-    }
-  }
-
-  if (isClient()) {
-    if ("auth/logout" === url) {
     }
   }
   return data;

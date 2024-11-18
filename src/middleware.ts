@@ -1,74 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getErrorResponse } from "./lib/helpers";
-import { verifyJWT } from "./lib/token";
 
-interface AuthenticatedRequest extends NextRequest {
-  user: {
-    id: string;
-  };
-}
+const privatePaths = ["/profile"];
+const authPaths = ["/login", "/register"];
 
-export async function middleware(req: NextRequest) {
-  const token: string[] = [];
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const accessToken = request.cookies.get("accessToken")?.value;
 
-  // get token from header if cookie has not been set
-  if (req.cookies.has("accessToken")) {
-    token.push(req.cookies.get("accessToken")?.value || "");
-  } else if (req.headers.get("Authorization")?.startsWith("Bearer ")) {
-    token.push(req.headers.get("Authorization")?.substring(7) || "");
-  }
-
-  if (req.nextUrl.pathname.startsWith("/login") && !token[0]) {
-    return;
-  }
-
-  const response = NextResponse.next();
-
-  console.log(token[0]);
-
-  //   Check có token và có valid không? nếu không có hoặc ko valid thì redirect về login page?
-  try {
-    if (token[0]) {
-      const { sub } = await verifyJWT<{ sub: string }>(token[0]);
-      response.headers.set("X-USER-ID", sub);
-      (req as AuthenticatedRequest).user = { id: sub };
-      console.log(sub);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (req.nextUrl.pathname.startsWith("/api")) {
-      return getErrorResponse(
-        401,
-        "Token is invalid or user doesn't exists",
-        error
-      );
-    }
-
-    return NextResponse.redirect(new URL(`/login`, req.url));
-  }
-  // Server
+  // Chưa đăng nhập thì không cho vào private paths
   if (
-    !token[0] &&
-    (req.nextUrl.pathname.startsWith("/api/users") ||
-      req.nextUrl.pathname.startsWith("/api/logout"))
+    privatePaths.some((path: string) => pathname.startsWith(path)) &&
+    !accessToken
   ) {
-    return getErrorResponse(401, "You are not login. Please login");
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  const authUser = (req as AuthenticatedRequest).user;
-
-  if (!authUser) {
-    return NextResponse.redirect(new URL(`/login`, req.url));
+  // Đăng nhập rồi thì không cho vào login/register nữa
+  if (
+    authPaths.some((path: string) => pathname.startsWith(path)) &&
+    accessToken
+  ) {
+    return NextResponse.redirect(new URL("/profile", request.url));
   }
-
-  // Redirect to login page
-  if (req.url.includes("/login") && authUser && token[0]) {
-    return NextResponse.redirect(new URL("/profile", req.url));
-  }
-
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/profile", "/login", "/api/users/:path*", "/api/logout"],
+  matcher: ["/profile", "/login", "/api/logout"],
 };
