@@ -34,13 +34,9 @@ export default function RegisterForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSubmitSuccessful]);
 
-  async function RegisterUserFunction(credentials: RegisterUserInput) {
+  async function registerUserFunction(credentials: RegisterUserInput) {
     try {
-      const result = await authApiRequest.register(credentials);
-
-      await authApiRequest.auth(result.payload);
-
-      console.log(result);
+      await authApiRequest.register(credentials);
 
       toast.success("Logged in successfully");
       return router.push("/profile");
@@ -60,7 +56,7 @@ export default function RegisterForm() {
 
   const onSubmitHandler: SubmitHandler<RegisterUserInput> = (values) => {
     console.log(values);
-    RegisterUserFunction(values);
+    registerUserFunction(values);
   };
 
   return (
